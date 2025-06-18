@@ -1,0 +1,59 @@
+# version: '3.8'
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: prediction_data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5431:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+
+  pg_db_creation:
+    build:
+      context: ./pg_db_creation
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  data_load:
+    build:
+      context: ./data_load
+    depends_on:
+      - pg_db_creation
+    restart: "no"
+    volumes:
+      - ".:/data"
+
+  data_cleaning:
+    build:
+      context: ./data_cleaning
+    depends_on:
+      - data_load
+    restart: "no"
+
+  app:
+    build:
+      context: ./app
+    ports:
+      - "8501:8501"
+    # volumes:
+    #   - "C:/Users/akamb/OneDrive/Desktop/Assignment:/data"
+    depends_on:
+      - data_cleaning
+    environment:
+      - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=prediction_data
+
+volumes:
+  pgdata:
