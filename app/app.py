@@ -5,10 +5,10 @@ import plotly.express as px
 
 # --- PostgreSQL Connection Configuration ---
 DB_CONFIG = {
-    "host": "db",  # Use "db" if running in Docker Compose
+    "host": "postgres",  # Use "db" if running in Docker Compose
     "port": 5432,
     "user": "postgres",
-    "password": "root",
+    "password": "postgres",
     "database": "prediction_data"
 }
 
