@@ -124,6 +124,55 @@ Ensure that:
 
 ---
 
+
+---
+
+## 🌬️ Airflow Orchestration (New)
+
+The project now includes **Apache Airflow** for orchestrating the ETL pipeline on an **hourly schedule**.
+
+### 🔁 Orchestration Flow
+
+1. **PostgreSQL (`postgres`)** – Launches the database container.
+2. **Airflow Init (`airflow-init`)** – Initializes Airflow DB and creates the admin user.
+3. **Airflow Webserver (`airflow-webserver`)** – Provides a UI at [http://localhost:8080](http://localhost:8080).
+4. **Airflow Scheduler (`airflow-scheduler`)** – Runs the DAG every hour.
+5. **ETL DAG** – Executes the following tasks:
+   - `pg_db_creation.py`: Creates the database schema
+   - `data_load.py`: Loads the CSV into PostgreSQL
+   - `data_cleaning.py`: Cleans and preprocesses data
+
+### 🔐 Airflow Credentials
+
+- **Username**: `admin`
+- **Password**: `admin`
+
+### 🌐 Access
+
+- **Airflow UI**: [http://localhost:8080](http://localhost:8080)
+- **Streamlit App**: [http://localhost:8501](http://localhost:8501)
+
+### 🗃️ DAG Location
+
+Airflow DAG definition file: `dags/churn_etl_pipeline.py`  
+It uses BashOperator to execute the scripts directly.
+
+---
+
+## 📌 Updated Services Overview
+
+| Service         | Description                                  | Port   |
+|----------------|----------------------------------------------|--------|
+| `postgres`      | PostgreSQL database                          | 5431   |
+| `pg_db_creation`| Creates required schema                      | N/A    |
+| `data_load`     | Loads CSV into PostgreSQL                    | N/A    |
+| `data_cleaning` | Cleans and processes the data                | N/A    |
+| `app`           | Streamlit dashboard                          | 8501   |
+| `airflow-init`  | Initializes Airflow DB and creates user      | N/A    |
+| `airflow-webserver` | Airflow UI for DAG control              | 8080   |
+| `airflow-scheduler` | Executes DAG on hourly schedule         | N/A    |
+
+
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute it with attribution.
