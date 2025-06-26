@@ -5,7 +5,7 @@ import psycopg2
 
 # --- Configuration ---
 # CSV_FILE = os.path.join(os.path.expanduser("~"), "Downloads", "Assignment", "customer_churn_data.csv")
-CSV_FILE = "/data/customer_churn_data.csv"
+CSV_FILE = "/opt/airflow/dags/customer_churn_data.csv"
 TABLE_NAME = "customer_data"
 DB_NAME = "prediction_data"
 DB_USER = "postgres"
@@ -82,6 +82,6 @@ try:
     engine = create_engine(f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
     df.columns = [c.replace(' ', '_').lower() for c in df.columns]  # Normalize column names
     df.to_sql(TABLE_NAME, engine, if_exists='append', index=False)
-    print(f"\n✅ {final_count} unique record(s) loaded into '{TABLE_NAME}' successfully.")
+    print(f"\n✅ {final_count} unique record(s) loaded into '{TABLE_NAME} {DB_PASS} {DB_HOST}:{DB_PORT}/{DB_NAME}' successfully.")
 except Exception as e:
     print(f"❌ Failed to load data into PostgreSQL: {e}")

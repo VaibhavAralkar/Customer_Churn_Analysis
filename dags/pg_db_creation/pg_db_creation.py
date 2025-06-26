@@ -1,34 +1,35 @@
+
 import psycopg2
-from psycopg2 import sql
-import getpass
 
-# --- Configuration ---
-DB_NAME = "prediction_data"
-DB_USER = "postgres"
-DB_HOST = "postgres"
-DB_PORT = "5432"
-
-# # Prompt for password securely
-# DB_PASS = getpass.getpass("Enter PostgreSQL password: ")
-DB_PASS = "postgres"
-try:
+def create_etl_logs_table():
     conn = psycopg2.connect(
-        dbname="postgres",
-        user=DB_USER,
-        password=DB_PASS,
-        host=DB_HOST,
-        port=DB_PORT
+        dbname='prediction_data',
+        user='postgres',
+        password='postgres',
+        host='postgres',
+        port=5432
     )
-    conn.autocommit = True
-    cursor = conn.cursor()
 
-    cursor.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(DB_NAME)))
-    print(f"✅ Database '{DB_NAME}' created successfully.")
+    cur = conn.cursor()
 
-except psycopg2.errors.DuplicateDatabase:
-    print(f"⚠️ Database '{DB_NAME}' already exists.")
-except Exception as e:
-    print(f"❌ Error: {e}")
-finally:
-    if 'cursor' in locals(): cursor.close()
-    if 'conn' in locals(): conn.close()
+    print("✅ Connected to prediction_data database.")
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS etl_logs (
+            id SERIAL PRIMARY KEY,
+            task_id TEXT,
+            status TEXT,
+            start_time TIMESTAMP,
+            end_time TIMESTAMP,
+            error_message TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("✅ etl_logs table ensured.")
+
+if __name__ == "__main__":
+    create_etl_logs_table()

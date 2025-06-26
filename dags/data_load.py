@@ -4,8 +4,8 @@ from sqlalchemy import create_engine
 import psycopg2
 
 # --- Configuration ---
-# CSV_FILE = os.path.join(os.path.expanduser("~"), "Downloads", "Assignment", "customer_churn_data.csv")
-CSV_FILE = "/data/customer_churn_data.csv"
+# CSV_FILE = os.path.join(os.path.expanduser("~"), "Downloads", "Assignment", "/opt/airflow/dags/customer_churn_data.csv")
+CSV_FILE = "/data//opt/airflow/dags/customer_churn_data.csv"
 TABLE_NAME = "customer_data"
 DB_NAME = "prediction_data"
 DB_USER = "postgres"
@@ -85,22 +85,3 @@ try:
     print(f"\n✅ {final_count} unique record(s) loaded into '{TABLE_NAME} {DB_PASS} {DB_HOST}:{DB_PORT}/{DB_NAME}' successfully.")
 except Exception as e:
     print(f"❌ Failed to load data into PostgreSQL: {e}")
-
-
-# --- Step 7: Log success to etl_logs table ---
-try:
-    with psycopg2.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASS,
-        host=DB_HOST,
-        port=DB_PORT
-    ) as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                INSERT INTO etl_logs (task_id, status, message, timestamp)
-                VALUES (%s, %s, %s, NOW())
-            """, ('data_load', 'success', f'{final_count} records loaded into {TABLE_NAME}'))
-            conn.commit()
-except Exception as log_exc:
-    print(f"⚠️ Failed to log success in etl_logs: {log_exc}")
